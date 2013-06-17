@@ -1,0 +1,21 @@
+<package>
+  <description brief="kfusion_ros">
+
+     kfusion_ros
+
+  </description>
+  <author>Christian Kerl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/kfusion_ros</url>
+  <depend package="roscpp"/>
+  <depend package="sensor_msgs"/>
+  <depend package="visualization_msgs"/>
+  <depend package="image_transport"/>
+  <depend package="tf"/>
+  <depend package="opencv2"/>
+  <depend package="kfusion_core"/>
+
+</package>
+
+

@@ -1,0 +1,14 @@
+<package>
+  <description brief="kfusion_core">
+     rosbuild wrapper for kfusion
+  </description>
+  <author>Christian Kerl</author>
+  <license>MIT</license>
+  <review status="unreviewed" notes=""/>
+  <url></url>
+  <export>
+    <cpp cflags="-I${prefix}/include/" lflags="-L${prefix}/lib -lkfusion" />
+  </export>
+</package>
+
+
