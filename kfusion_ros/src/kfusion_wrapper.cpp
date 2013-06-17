@@ -55,23 +55,57 @@ void toCvMat(Image<T, Device>& img, cv::Mat& mat)
   toCvMat(tmp, mat);
 }
 
+geometry_msgs::Point point(double x, double y, double z)
+{
+  geometry_msgs::Point p;
+  p.x = x;
+  p.y = y;
+  p.z = z;
+
+  return p;
+}
+
 void createBoundingBoxMarker(const float3& volume, visualization_msgs::Marker& bb)
 {
-  bb.type = visualization_msgs::Marker::POINTS;
+  double x = volume.x, y = volume.y, z = volume.z;
 
-  geometry_msgs::Point p1;
+  bb.type = visualization_msgs::Marker::LINE_LIST;
 
-  for(int x = 0; x < 2; x++)
-    for(int y = 0; y < 2; y++)
-      for(int z = 0; z < 2; z++)
-      {
-        p1.x = x * volume.x;
-        p1.y = y * volume.y;
-        p1.z = z * volume.z;
+  bb.points.push_back(point(0, 0, 0));
+  bb.points.push_back(point(x, 0, 0));
 
-        bb.points.push_back(p1);
-      }
+  bb.points.push_back(point(x, 0, 0));
+  bb.points.push_back(point(x, y, 0));
 
+  bb.points.push_back(point(x, y, 0));
+  bb.points.push_back(point(0, y, 0));
+
+  bb.points.push_back(point(0, y, 0));
+  bb.points.push_back(point(0, 0, 0));
+
+  bb.points.push_back(point(0, 0, z));
+  bb.points.push_back(point(x, 0, z));
+
+  bb.points.push_back(point(x, 0, z));
+  bb.points.push_back(point(x, y, z));
+
+  bb.points.push_back(point(x, y, z));
+  bb.points.push_back(point(0, y, z));
+
+  bb.points.push_back(point(0, y, z));
+  bb.points.push_back(point(0, 0, z));
+
+  bb.points.push_back(point(0, 0, 0));
+  bb.points.push_back(point(0, 0, z));
+
+  bb.points.push_back(point(0, y, 0));
+  bb.points.push_back(point(0, y, z));
+
+  bb.points.push_back(point(x, 0, 0));
+  bb.points.push_back(point(x, 0, z));
+
+  bb.points.push_back(point(x, y, 0));
+  bb.points.push_back(point(x, y, z));
 }
 
 KFusionWrapper::KFusionWrapper(ros::NodeHandle &nh, ros::NodeHandle &nh_private) :
@@ -121,7 +155,7 @@ void KFusionWrapper::init(const sensor_msgs::CameraInfo& info)
   bb.ns = "kfusion/boundingbox";
   bb.id = 1;
   bb.color.a = bb.color.r = 1.0;
-  bb.scale.x = bb.scale.y = bb.scale.z = 0.05;
+  bb.scale.x = bb.scale.y = bb.scale.z = 0.01;
   createBoundingBoxMarker(configuration_.volumeDimensions, bb);
   bounding_box_publisher_.publish(bb);
 }
@@ -204,19 +238,24 @@ void KFusionWrapper::publishPointCloud(const std_msgs::Header& header)
 void KFusionWrapper::publishTransforms(const std_msgs::Header& header)
 {
   //TODO: fix this stuff :(
-  tf::Transform world_volume, volume_camera;
-  world_volume.getBasis().setEulerZYX(0, 0, 0);
-  world_volume.getOrigin().setValue(0, 0, 0);
+  tf::Transform kworld_volume, kworld_camera, world_kworld;
+  world_kworld.getOrigin().setValue(0, 0, kfusion_.configuration.volumeDimensions.z);
+  world_kworld.getBasis().setEulerZYX(0, 0, -M_PI_2);
 
-  volume_camera.getBasis().setValue(
+  kworld_volume.getBasis().setEulerZYX(M_PI_2, 0, M_PI_2);
+  kworld_volume.getOrigin().setValue(0, 0, 0);
+
+  kworld_camera.getBasis().setValue(
       kfusion_.pose.data[0].x, kfusion_.pose.data[0].y, kfusion_.pose.data[0].z,
       kfusion_.pose.data[1].x, kfusion_.pose.data[1].y, kfusion_.pose.data[1].z,
       kfusion_.pose.data[2].x, kfusion_.pose.data[2].y, kfusion_.pose.data[2].z
   );
-  volume_camera.getOrigin().setValue(kfusion_.pose.data[0].w, kfusion_.pose.data[1].w, kfusion_.pose.data[2].w);
 
-  tf_.sendTransform(tf::StampedTransform(world_volume, header.stamp, "/world", "/kfusion_volume"));
-  tf_.sendTransform(tf::StampedTransform(volume_camera, header.stamp, "/kfusion_volume", "/camera"));
+  kworld_camera.getOrigin().setValue(kfusion_.pose.data[0].w, kfusion_.pose.data[1].w, kfusion_.pose.data[2].w);
+
+  tf_.sendTransform(tf::StampedTransform(world_kworld, header.stamp, "/world", "/kfusion_world"));
+  tf_.sendTransform(tf::StampedTransform(kworld_volume, header.stamp, "/kfusion_world", "/kfusion_volume"));
+  tf_.sendTransform(tf::StampedTransform(kworld_camera, header.stamp, "/kfusion_world", "/camera"));
 }
 
 } /* namespace kfusion_ros */
