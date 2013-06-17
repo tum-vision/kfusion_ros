@@ -1,2 +1,4 @@
 .*project
 cmake_install.cmake
+build/
+bin/
