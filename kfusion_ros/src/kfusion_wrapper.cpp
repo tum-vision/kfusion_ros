@@ -150,14 +150,15 @@ void KFusionWrapper::onDepth(const sensor_msgs::ImageConstPtr& img_msg, const se
   {
       kfusion_.Integrate();
       kfusion_.Raycast();
+
+      publishPointCloud(img_msg->header);
+      publishTransforms(img_msg->header);
   }
   else
   {
     failures_count_++;
   }
 
-  publishPointCloud(img_msg->header);
-  publishTransforms(img_msg->header);
   first_ = false;
 }
 
