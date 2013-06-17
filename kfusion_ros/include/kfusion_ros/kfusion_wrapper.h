@@ -39,6 +39,8 @@ private:
 
   void onDepth(const sensor_msgs::ImageConstPtr& img_msg, const sensor_msgs::CameraInfoConstPtr& info_msg);
 
+  void publishBoundingBox(const std_msgs::Header& header);
+
   void publishPointCloud(const std_msgs::Header& header);
 
   void publishTransforms(const std_msgs::Header& header);
