@@ -88,7 +88,7 @@ KFusionWrapper::KFusionWrapper(ros::NodeHandle &nh, ros::NodeHandle &nh_private)
   pointcloud_publisher_ = nh_.advertise<sensor_msgs::PointCloud2>("kfusion_pointcloud", 1);
   bounding_box_publisher_ = nh.advertise<visualization_msgs::Marker>("visualization_marker", 1, true);
 
-  depth_subscriber_ = it_.subscribeCamera("camera/depth_registered/image_raw", 1, &KFusionWrapper::onDepth, this);
+  depth_subscriber_ = it_.subscribeCamera("depth", 1, &KFusionWrapper::onDepth, this);
 }
 
 KFusionWrapper::~KFusionWrapper()
@@ -117,6 +117,8 @@ void KFusionWrapper::init(const sensor_msgs::CameraInfo& info)
 
   kfusion_.Init(configuration_);
   kfusion_.setPose(pose);
+
+  publishBoundingBox(info.header);
 }
 
 void KFusionWrapper::onDepth(const sensor_msgs::ImageConstPtr& img_msg, const sensor_msgs::CameraInfoConstPtr& info_msg)
@@ -162,7 +164,7 @@ void KFusionWrapper::publishBoundingBox(const std_msgs::Header& header)
   // create bounding box visualization
   visualization_msgs::Marker bb;
   bb.header.frame_id = "/kfusion_volume";
-  bb.header.stamp = header.stamp;
+  bb.header.stamp = ros::Time(0);
   bb.ns = "kfusion/boundingbox";
   bb.id = 1;
   bb.color.a = bb.color.r = 1.0;
