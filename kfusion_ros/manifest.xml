@@ -5,9 +5,10 @@
 
   </description>
   <author>Christian Kerl</author>
-  <license>BSD</license>
+  <license>MIT</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/kfusion_ros</url>
+  <url></url>
+  
   <depend package="roscpp"/>
   <depend package="sensor_msgs"/>
   <depend package="visualization_msgs"/>
