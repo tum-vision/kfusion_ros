@@ -12,6 +12,15 @@ $ rosmake kfusion_ros
 
 Note: `~/fuerte_workspace` has to be in your `$ROS_PACKAGE_PATH`
 
+### Running
+
+to run kfusion_ros and a visualization of the volume in RVIZ, type:
+
+```
+$ roslaunch kfusion_ros kfusion.launch
+```
+
+
 ### Supported ROS versions
 
  - fuerte
