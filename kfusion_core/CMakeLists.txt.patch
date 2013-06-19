@@ -1,0 +1,25 @@
+From 0ea0cdff1f1fc5a0a31e954945af9e3a309843d0 Mon Sep 17 00:00:00 2001
+From: Christian Kerl <christian.kerl@in.tum.de>
+Date: Wed, 19 Jun 2013 08:16:51 +0200
+Subject: [PATCH] added check whether windows kinect sdk env var is set
+
+---
+ CMakeLists.txt |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c93bf74..5aa6994 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -52,7 +52,7 @@ if (GLUT_FOUND)
+             kinect.cpp interface.h interface.cpp
+             )
+         target_link_libraries(kfusion_kinect kfusion ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${FREENECT_LIBRARIES}) 
+-    else()
++    elseif(DEFINED ENV{KINECTSDK10_DIR})
+         include_directories($ENV{KINECTSDK10_DIR}/inc)
+         add_definitions(-DMS_KINECT_INTERFACE)
+         add_executable(kfusion_kinect
+-- 
+1.7.9.5
+
