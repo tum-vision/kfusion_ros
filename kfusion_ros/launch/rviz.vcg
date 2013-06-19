@@ -1,0 +1,78 @@
+Background\ ColorB=0.65098
+Background\ ColorG=0.65098
+Background\ ColorR=0.65098
+Camera\ Config=0.769796 4.60594 10.2999 -0.0523198 0.774718 0.616714
+Camera\ Type=rviz::OrbitViewController
+Fixed\ Frame=/world
+Marker.Enabled=1
+Marker.Marker\ Topic=visualization_marker
+Marker.Queue\ Size=100
+PointCloud2..AxisColorAutocompute\ Value\ Bounds=1
+PointCloud2..AxisColorAxis=2
+PointCloud2..AxisColorMax\ Value=2.997
+PointCloud2..AxisColorMin\ Value=0
+PointCloud2..AxisColorUse\ Fixed\ Frame=1
+PointCloud2..FlatColorColorB=0.784314
+PointCloud2..FlatColorColorG=0.447059
+PointCloud2..FlatColorColorR=0.129412
+PointCloud2..IntensityAutocompute\ Intensity\ Bounds=1
+PointCloud2..IntensityChannel\ Name=z
+PointCloud2..IntensityMax\ ColorB=1
+PointCloud2..IntensityMax\ ColorG=1
+PointCloud2..IntensityMax\ ColorR=1
+PointCloud2..IntensityMax\ Intensity=2.99843
+PointCloud2..IntensityMin\ ColorB=0
+PointCloud2..IntensityMin\ ColorG=0
+PointCloud2..IntensityMin\ ColorR=0
+PointCloud2..IntensityMin\ Intensity=0
+PointCloud2..IntensityUse\ full\ RGB\ spectrum=1
+PointCloud2.Alpha=1
+PointCloud2.Billboard\ Size=0.01
+PointCloud2.Color\ Transformer=Intensity
+PointCloud2.Decay\ Time=0
+PointCloud2.Enabled=1
+PointCloud2.Position\ Transformer=XYZ
+PointCloud2.Queue\ Size=1
+PointCloud2.Selectable=0
+PointCloud2.Style=0
+PointCloud2.Topic=/kfusion_pointcloud
+Property\ Grid\ Splitter=919,78
+Property\ Grid\ State=expanded=.Global Options;splitterratio=0.439781
+QMainWindow=000000ff00000000fd00000003000000000000023600000437fc0200000002fb000000100044006900730070006c006100790073010000001d00000437000000ee00fffffffb0000000a0049006d0061006700650000000380000000d40000000000000000000000010000013100000437fc0200000003fb0000001e0054006f006f006c002000500072006f0070006500720074006900650073010000001d000001160000006700fffffffb0000000a005600690065007700730100000139000001ff000000bb00fffffffb0000001200530065006c0065006300740069006f006e010000033e000001160000006700ffffff00000003000007800000003efc0100000001fb0000000800540069006d0065010000000000000780000002bf00ffffff0000040d0000043700000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+TF.All\ Enabled=0
+TF.Enabled=1
+TF.Frame\ Timeout=15
+TF.Marker\ Scale=1
+TF.Show\ Arrows=1
+TF.Show\ Axes=1
+TF.Show\ Names=1
+TF.Update\ Interval=0
+Target\ Frame=<Fixed Frame>
+Tool\ 2D\ Nav\ GoalTopic=/move_base_simple/goal
+Tool\ 2D\ Pose\ EstimateTopic=initialpose
+[Display0]
+ClassName=rviz::TFDisplay
+Name=TF
+[Display1]
+ClassName=rviz::PointCloud2Display
+Name=PointCloud2
+[Display2]
+ClassName=rviz::MarkerDisplay
+Name=Marker
+[Marker.kfusion]
+boundingbox=1
+[TF.Frames.]
+4x4_95.Enabled=1
+ardrone_base_bottomcam.Enabled=1
+base_link_estimate.Enabled=1
+camera.Enabled=1
+kfusion_volume.Enabled=1
+kfusion_world.Enabled=0
+marker_1.Enabled=1
+marker_95.Enabled=1
+world.Enabled=1
+[Window]
+Height=1176
+Width=1920
+X=-14
+Y=-347
