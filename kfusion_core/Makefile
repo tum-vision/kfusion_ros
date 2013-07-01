@@ -11,7 +11,7 @@ kfusion:
 	git apply ../CMakeLists.txt.patch && \
 	mkdir build && \
 	cd build && \
-	cmake .. && \
+	cmake -D CUDA_TOOLKIT_ROOT_DIR=$(CUDA_TOOLKIT_ROOT_DIR) .. && \
 	make; \
 	cd ../.. && \
 	mkdir include && \
