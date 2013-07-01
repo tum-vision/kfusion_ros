@@ -23,6 +23,8 @@
 
 #include <kfusion_ros/kfusion_wrapper.h>
 
+#include <helpers.h>
+
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/image_encodings.h>
 
@@ -38,6 +40,7 @@ struct CudaTypeTrait { static int CvType() { return 0; } };
 
 template<> struct CudaTypeTrait<float> { static int CvType() { return CV_32FC1; } };
 template<> struct CudaTypeTrait<float3> { static int CvType() { return CV_32FC3; } };
+template<> struct CudaTypeTrait<uchar4> { static int CvType() { return CV_8UC4; } };
 
 template<typename T, typename Allocator>
 void toImageMessage(Image<T, Allocator>& img, sensor_msgs::Image& img_msg)
@@ -85,7 +88,8 @@ KFusionWrapper::KFusionWrapper(ros::NodeHandle &nh, ros::NodeHandle &nh_private)
     first_(true),
     failures_count_(0)
 {
-  pointcloud_publisher_ = nh_.advertise<sensor_msgs::PointCloud2>("kfusion_pointcloud", 1);
+  pointcloud_publisher_ = nh_.advertise<sensor_msgs::PointCloud2>("pointcloud", 1);
+  model_publisher_ = nh_.advertise<sensor_msgs::Image>("model", 1);
   bounding_box_publisher_ = nh.advertise<visualization_msgs::Marker>("visualization_marker", 1, true);
 
   depth_subscriber_ = it_.subscribeCamera("depth", 1, &KFusionWrapper::onDepth, this);
@@ -97,6 +101,17 @@ KFusionWrapper::~KFusionWrapper()
 
 void KFusionWrapper::init(const sensor_msgs::CameraInfo& info)
 {
+  bool found = false;
+  while(!found)
+  {
+    try
+    {
+      tf_lookup_.lookupTransform(info.header.frame_id, "/camera_link", ros::Time(0), optical_frame2camera_link);
+      found = true;
+    }
+    catch(tf::TransformException& e) {}
+  }
+
   configuration_.inputSize.x = info.width;
   configuration_.inputSize.y = info.height;
   configuration_.volumeDimensions = make_float3(3.0);
@@ -114,6 +129,7 @@ void KFusionWrapper::init(const sensor_msgs::CameraInfo& info)
   pose.data[3] = make_float4(0.0f, 0.0f, 0.0f, 1.0f);
 
   input_depth_img_.alloc(make_uint2(info.width, info.height));
+  model_.alloc(make_uint2(info.width, info.height));
 
   kfusion_.Init(configuration_);
   kfusion_.setPose(pose);
@@ -147,6 +163,7 @@ void KFusionWrapper::onDepth(const sensor_msgs::ImageConstPtr& img_msg, const se
       kfusion_.Raycast();
 
       publishPointCloud(img_msg->header);
+      publishModel(img_msg->header);
       publishTransforms(img_msg->header);
   }
   else
@@ -174,8 +191,39 @@ void KFusionWrapper::publishBoundingBox(const std_msgs::Header& header)
   bounding_box_publisher_.publish(bb);
 }
 
+void KFusionWrapper::publishModel(const std_msgs::Header& header)
+{
+  if(model_publisher_.getNumSubscribers() == 0) return;
+
+  static const float3 light = make_float3(1, 1, -1.0);
+  static const float3 ambient = make_float3(0.1, 0.1, 0.1);
+
+  renderLight(model_.getDeviceImage(), kfusion_.vertex, kfusion_.normal, light, ambient);
+
+  size_t bpp = 3;
+
+  sensor_msgs::Image::Ptr img_msg(new sensor_msgs::Image);
+
+  img_msg->header.stamp = header.stamp;
+  img_msg->header.frame_id = "/camera";
+  img_msg->encoding = sensor_msgs::image_encodings::RGB8;
+  img_msg->width = model_.size.x;
+  img_msg->height = model_.size.y;
+  img_msg->step = model_.size.x * bpp;
+  img_msg->data.resize(model_.size.x * model_.size.y * bpp);
+
+  cv::Mat model_rgba, model_rgb(img_msg->height, img_msg->width, CV_8UC3, img_msg->data.data());
+  toCvMat(model_, model_rgba);
+
+  cv::cvtColor(model_rgba, model_rgb, CV_RGBA2RGB);
+
+  model_publisher_.publish(img_msg);
+}
+
 void KFusionWrapper::publishPointCloud(const std_msgs::Header& header)
 {
+  if(pointcloud_publisher_.getNumSubscribers() == 0) return;
+
   cv::Mat vertices;
   toCvMat(kfusion_.vertex, vertices);
 
@@ -233,6 +281,7 @@ void KFusionWrapper::publishTransforms(const std_msgs::Header& header)
   tf_.sendTransform(tf::StampedTransform(world_kworld, header.stamp, "/world", "/kfusion_world"));
   tf_.sendTransform(tf::StampedTransform(kworld_volume, header.stamp, "/kfusion_world", "/kfusion_volume"));
   tf_.sendTransform(tf::StampedTransform(kworld_camera, header.stamp, "/kfusion_world", "/camera"));
+  tf_.sendTransform(tf::StampedTransform(optical_frame2camera_link, header.stamp, "/camera", "/camera_link"));
 }
 
 geometry_msgs::Point point(double x, double y, double z)

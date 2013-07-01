@@ -5,7 +5,7 @@
   <arg name="launch_prefix" value="" unless="$(arg debug)" />
   
   <node launch-prefix="$(arg launch_prefix)" pkg="kfusion_ros" type="kfusion_node" name="kfusion" output="screen">
-    <remap from="depth" to="camera/depth/image_raw" />
+    <remap from="depth" to="camera/depth_registered/image_raw" />
   </node>
   
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find kfusion_ros)/launch/rviz.vcg" />
