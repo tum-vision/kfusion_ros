@@ -7,7 +7,7 @@
   <review status="unreviewed" notes=""/>
   <url></url>
   <export>
-    <cpp cflags="-I${prefix}/include/" lflags="-L${prefix}/lib -lkfusion" />
+    <cpp cflags="-I${prefix}/include/ -I${prefix}/kfusion_src/thirdparty/" lflags="-L${prefix}/lib -lkfusion" />
   </export>
 </package>
 
